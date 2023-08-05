@@ -67,9 +67,9 @@ def generate_training_testing_sets(X, y, ratio_testing=0.2):
 
 
 def open_csv(filepath='simulation_data.csv'):
-    data = pd.read_csv(filepath)
-    print('data loaded from %s'%filepath)
-    return data
+        data = pd.read_csv(filepath)
+        print(f'data loaded from {filepath}')
+        return data
 
 def system_dynamics(x_k, u_k, d_k):
     A = np.array([[0.8511, 0],[0, 1]])
@@ -87,72 +87,72 @@ def system_dynamics(x_k, u_k, d_k):
     return x_k_plus
 
 def csv_dump_test(X_test, y_test, filepath='test_data.csv'):
-    import pandas as pd
-    temp = np.concatenate((X_test, y_test), axis=1)
+        import pandas as pd
+        temp = np.concatenate((X_test, y_test), axis=1)
 
-    # df = pd.DataFrame(temp, columns=['Tr0','Ebat0','dT','dsr','dint','Phvac','Pbat','Pgrid'])
-    df = pd.DataFrame(temp)
-    print(df.head())
-    try:
-        df.to_csv(filepath)
-        print('csv test data file successfully written to %s'%filepath)
-    except IOError as e:
-        print(e)
+        # df = pd.DataFrame(temp, columns=['Tr0','Ebat0','dT','dsr','dint','Phvac','Pbat','Pgrid'])
+        df = pd.DataFrame(temp)
+        print(df.head())
+        try:
+                df.to_csv(filepath)
+                print(f'csv test data file successfully written to {filepath}')
+        except IOError as e:
+            print(e)
 
 
 if __name__ == '__main__':
-    data = open_csv('Varying_disturbance_simulation_data10000lines.csv')
-    print('A little overview of the loaded data: ')
-    print(data.head())
+        data = open_csv('Varying_disturbance_simulation_data10000lines.csv')
+        print('A little overview of the loaded data: ')
+        print(data.head())
 
-    data_np = data.values
-    print(data_np.shape)
-
-
-    X = data_np[:, 1:18]
-    y = data_np[:, 18:21]
-
-    X_train, X_test, y_train, y_test = generate_training_testing_sets(X, y)
+        data_np = data.values
+        print(data_np.shape)
 
 
-    X_train_scaled = preprocessing.scale(X_train)
-    X_test_scaled = preprocessing.scale(X_test)
+        X = data_np[:, 1:18]
+        y = data_np[:, 18:21]
 
-    csv_dump_test(X_test_scaled, y_test, filepath='test_data_scaled.csv')
-    csv_dump_test(X_test, y_test, filepath='test_data_not_scaled.csv')
+        X_train, X_test, y_train, y_test = generate_training_testing_sets(X, y)
 
 
-    model = nn_train(X_train_scaled, y_train, input_dimension=X.shape[1], output_dimension=y.shape[1], nb_epochs=100)
+        X_train_scaled = preprocessing.scale(X_train)
+        X_test_scaled = preprocessing.scale(X_test)
 
-    filepath_trained_model = 'Final_model_varDist_20epochs_100000lines.h5'
+        csv_dump_test(X_test_scaled, y_test, filepath='test_data_scaled.csv')
+        csv_dump_test(X_test, y_test, filepath='test_data_not_scaled.csv')
 
-    model.save(filepath_trained_model)
-    print('model saved under :%s'%filepath_trained_model)
 
-    from keras.models import *
-    trained_model = load_model(filepath_trained_model)
-    print('trained model loaded from :%s'%filepath_trained_model)
+        model = nn_train(X_train_scaled, y_train, input_dimension=X.shape[1], output_dimension=y.shape[1], nb_epochs=100)
 
-    X_test = X_test_scaled
+        filepath_trained_model = 'Final_model_varDist_20epochs_100000lines.h5'
 
-    predictions = np.array([])
-    for i in range(X_test.shape[0]):
-        temp = np.array([])
-        for j in range(X_test.shape[1]):
-            temp = np.append(temp, X_test[i, j])
-        temp = temp.reshape((1, X_test.shape[1]))
-        predictions = np.append(predictions, trained_model.predict(temp))
+        model.save(filepath_trained_model)
+        print(f'model saved under :{filepath_trained_model}')
 
-    predictions = predictions.reshape((X_test.shape[0], y_test.shape[1]))
+        from keras.models import *
+        trained_model = load_model(filepath_trained_model)
+        print(f'trained model loaded from :{filepath_trained_model}')
 
-    print('X_train_scaled :')
-    print(X_train_scaled[0:5, :])
+        X_test = X_test_scaled
 
-    print('X_test_scaled :')
-    print(X_test_scaled[0:5, :])
+        predictions = np.array([])
+        for i in range(X_test.shape[0]):
+            temp = np.array([])
+            for j in range(X_test.shape[1]):
+                temp = np.append(temp, X_test[i, j])
+            temp = temp.reshape((1, X_test.shape[1]))
+            predictions = np.append(predictions, trained_model.predict(temp))
 
-    print('Prediction matrix :')
-    print(predictions[0:5, :])
+        predictions = predictions.reshape((X_test.shape[0], y_test.shape[1]))
 
-    print('Compare it to label matrix y_test :')
-    print(y_test[0:5, :])
+        print('X_train_scaled :')
+        print(X_train_scaled[0:5, :])
+
+        print('X_test_scaled :')
+        print(X_test_scaled[0:5, :])
+
+        print('Prediction matrix :')
+        print(predictions[0:5, :])
+
+        print('Compare it to label matrix y_test :')
+        print(y_test[0:5, :])
