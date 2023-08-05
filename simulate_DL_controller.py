@@ -119,10 +119,7 @@ def simulate_DLcontroller(trained_model, d_full, X_test, S=100):
 # Outputs : disturbance with additive gaussian noise
 def create_new_disturbance(d_full, noise_level=10):
     noise = noise_level*np.random.normal(0, 1, d_full.shape)
-    d_full_withNoise = d_full + noise
-    #print('Original disturbance')
-    #plot_disturbance(d_full)
-    return d_full_withNoise
+    return d_full + noise
 
 def import_disturbance(filepath='external_disturbances.mat'):
     mat_disturbance = sio.loadmat(filepath)
@@ -136,7 +133,7 @@ def import_disturbance(filepath='external_disturbances.mat'):
 
 def open_test_csv(filepath='test_data.csv'):
     data = pd.read_csv(filepath)
-    print('test data loaded from %s'%filepath)
+    print(f'test data loaded from {filepath}')
     return data.values
 
 def plot_mpc(mpc_u, mpc_x):
@@ -145,7 +142,7 @@ def plot_mpc(mpc_u, mpc_x):
     # matplotlib to plot the results
     import matplotlib.pyplot as plt
 
-    print('*As a reminder, x_init = %s*'%mpc_x[0, :])
+    print(f'*As a reminder, x_init = {mpc_x[0, :]}*')
 
     # plot the states
     plt.figure(1)
@@ -176,7 +173,7 @@ def plot_compare(mpc_u, mpc_x, mpc_g_mixed, Sim_u, Sim_x, Sim_g_mixed):
     # matplotlib to plot both the mpc simulation and the DL simulation on the same graphs
     import matplotlib.pyplot as plt
 
-    print('*As a reminder, x_init = %s*'%mpc_x[0, :])
+    print(f'*As a reminder, x_init = {mpc_x[0, :]}*')
 
     # plot the states
     plt.figure(1)
@@ -278,10 +275,10 @@ def simulate_MPC(d_full, S = 100, N=10, x_init = np.array([[20],[50000]])):
     m = SX.sym("m",nm,1) # Mixed variable
     d = SX.sym("d",nd,1) # Disturbance variable
 
-    print('nx=%s'%nx)
-    print('nu=%s'%nu)
-    print('nm=%s'%nm)
-    print('nd=%s'%nd)
+    print(f'nx={nx}')
+    print(f'nu={nu}')
+    print(f'nm={nm}')
+    print(f'nd={nd}')
 
     """## Choose the reference battery energy """
     #@title choose Ebat_ref
@@ -474,7 +471,7 @@ def simulate_MPC(d_full, S = 100, N=10, x_init = np.array([[20],[50000]])):
 if __name__ == '__main__':
     filepath_trained_model = 'Final_model_varDist_20epochs_100000lines.h5'
     trained_model = load_model(filepath_trained_model)
-    print('loaded trained model loaded from :%s'%filepath_trained_model)
+    print(f'loaded trained model loaded from :{filepath_trained_model}')
 
     # Saving the model to a png representation
     from keras.utils import plot_model

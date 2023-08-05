@@ -47,10 +47,10 @@ def simulate_MPC(d_full, S = 100, N=10, x_init = np.array([[21],[150000]])):
     m = SX.sym("m",nm,1) # Mixed variable
     d = SX.sym("d",nd,1) # Disturbance variable
 
-    print('nx=%s'%nx)
-    print('nu=%s'%nu)
-    print('nm=%s'%nm)
-    print('nd=%s'%nd)
+    print(f'nx={nx}')
+    print(f'nu={nu}')
+    print(f'nm={nm}')
+    print(f'nd={nd}')
 
     """## Choose the reference battery energy """
     #@title choose Ebat_ref
@@ -267,7 +267,7 @@ def plot_mpc(mpc_u, mpc_x, mpc_g_mixed):
     # matplotlib to plot the results
     import matplotlib.pyplot as plt
 
-    print('*As a reminder, x_init = %s*'%mpc_x[0, :])
+    print(f'*As a reminder, x_init = {mpc_x[0, :]}*')
 
     # plot the states
     plt.figure(1)
@@ -309,15 +309,8 @@ def generate_list_x0(nb_x0 = 1000):
     x0_Tr = np.linspace(20, 23, num=int(sqrt(nb_x0)))
     x0_Ebat = np.linspace(0, 200000, num=int(sqrt(nb_x0)))
 
-    x0_combinations = []
-
     import itertools
-    counter = 0
-    for i in itertools.product(x0_Tr, x0_Ebat):
-        x0_combinations.append([i[0], i[1]])
-        # print(i)
-        counter += 1
-
+    x0_combinations = [[i[0], i[1]] for i in itertools.product(x0_Tr, x0_Ebat)]
     return np.array(x0_combinations)
 
 # This will be used to save training/testing data in csv format
@@ -329,7 +322,7 @@ def csv_dump(X_data, y_data, filepath='last_simulation_data100000lines.csv'):
     print(df.head())
     try:
         df.to_csv(filepath)
-        print('csv data file successfully written to %s'%filepath)
+        print(f'csv data file successfully written to {filepath}')
     except IOError as e:
         print(e)
 
@@ -369,7 +362,7 @@ def generate_data(list_x0, d_training, N=5, S=100):
     data_x_full = np.zeros((mpc_x_all.shape[0], mpc_x_all.shape[1]+d_matrix.shape[1]))
     # duplicating disturbance list_x0.shape[0] times :
     d_final = np.array([])
-    for i in range(list_x0.shape[0]):
+    for _ in range(list_x0.shape[0]):
         d_final = np.append(d_final, d_matrix)
     d_final = d_final.reshape((mpc_x_all.shape[0], d_matrix.shape[1]))
 
